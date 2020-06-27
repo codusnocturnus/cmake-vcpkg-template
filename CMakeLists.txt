@@ -1,7 +1,4 @@
 cmake_minimum_required(VERSION 3.17)
-
-option(DO_SUPERBUILD "" ON)
-
 # MUST be done before call to 'project'
 get_cmake_property(vars CACHE_VARIABLES)
 foreach(var ${vars})
@@ -11,14 +8,13 @@ foreach(var ${vars})
         list(APPEND CL_ARGS "-D${var}=${${var}}")
     endif()
 endforeach()
-
+option(DO_SUPERBUILD "" ON)
 list(APPEND
     CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake
 )
-
 if (DO_SUPERBUILD)
     project(Superbuild
-        LANGUAGES NONE
+        LANGUAGES CXX
     )
     set(PROJECT_ROOT ${CMAKE_CURRENT_LIST_DIR})
     set(CMAKE_CXX_STANDARD 20)
@@ -58,11 +54,9 @@ if (DO_SUPERBUILD)
     set(VCPKG_CMD "${VCPKG_DIR}/${VCPKG_BINARY}")
     list(APPEND DEPENDENCIES vcpkg)
 
-    message(STATUS "fmt output: ${VCPKG_DIR}/packages/fmt_${VCPKG_TRIPLET}/BUILD_INFO")
-
     add_custom_command(
         OUTPUT "${VCPKG_DIR}/packages/fmt_${VCPKG_TRIPLET}/BUILD_INFO"
-        COMMAND ${VCPKG_CMD} install fmt
+        COMMAND ${VCPKG_CMD} install fmt:${VCPKG_TRIPLET}
         WORKING_DIRECTORY ${VCPKG_DIR}
         DEPENDS vcpkg-build
     )
@@ -88,9 +82,9 @@ if (DO_SUPERBUILD)
     )
     return()
 else()
-    project(hello
-        LANGUAGES CXX
+    project(Secondary
+        LANGUAGES NONE
     )
+    add_subdirectory(src)
 endif()
 
-add_subdirectory(src)
