@@ -28,4 +28,21 @@ function (get_vcpkg)
     ExternalProject_Get_Property(vcpkg SOURCE_DIR)
     set(VCPKG_DIR "${SOURCE_DIR}" PARENT_SCOPE)
     set(VCPKG_CMD "${SOURCE_DIR}/${VCPKG_BINARY}" PARENT_SCOPE)
+    set(VCPKG_DEPENDENCIES "vcpkg" PARENT_SCOPE)
+endfunction()
+
+function (vcpkg_install PACKAGE_NAME)
+    add_custom_command(
+        OUTPUT "${VCPKG_DIR}/packages/${PACKAGE_NAME}_${VCPKG_TRIPLET}/BUILD_INFO"
+        COMMAND ${VCPKG_CMD} install ${PACKAGE_NAME}:${VCPKG_TRIPLET}
+        WORKING_DIRECTORY ${VCPKG_DIR}
+        DEPENDS vcpkg-build
+    )
+    add_custom_target(
+        get${PACKAGE_NAME}
+        ALL
+        DEPENDS "${VCPKG_DIR}/packages/${PACKAGE_NAME}_${VCPKG_TRIPLET}/BUILD_INFO"
+    )
+    list(APPEND VCPKG_DEPENDENCIES "get${PACKAGE_NAME}")
+    set(VCPKG_DEPENDENCIES ${VCPKG_DEPENDENCIES} PARENT_SCOPE)
 endfunction()
