@@ -9,41 +9,32 @@ foreach(var ${vars})
     endif()
 endforeach()
 
-option(DO_SUPERBUILD "" ON)
-
 list(APPEND
     CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake
 )
 
-if (DO_SUPERBUILD)
-    project(Superbuild
-        LANGUAGES CXX
-    )
-    set(PROJECT_ROOT ${CMAKE_CURRENT_LIST_DIR})
-    set(DEPENDENCIES)
+project(top
+    LANGUAGES CXX
+)
+set(PROJECT_ROOT ${CMAKE_CURRENT_LIST_DIR})
+set(DEPENDENCIES)
 
-    set(EXTERNAL_VCPKG_DIR "" CACHE STRING "Allows the project to use an existing external vcpkg instance.")
-    include(vcpkg_utilities)
-    get_vcpkg(${EXTERNAL_VCPKG_DIR})
-    vcpkg_install(fmt)
-    
-    set_property(DIRECTORY
-        PROPERTY
-            EP_BASE hello
-    )
-    ExternalProject_Add(hello
-        DEPENDS ${VCPKG_DEPENDENCIES}
-        SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/src
-        BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/hello
-        INSTALL_COMMAND ""
-        CMAKE_ARGS --no-warn-unused-cli;
-                   ${CL_ARGS};
-                   -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>;
-                   -DCMAKE_TOOLCHAIN_FILE=${VCPKG_DIR}/scripts/buildsystems/vcpkg.cmake
-    )
-else()
-    project(Secondary
-        LANGUAGES NONE
-    )
-    add_subdirectory(src)
-endif()
+set(EXTERNAL_VCPKG_DIR "" CACHE STRING "Allows the project to use an existing external vcpkg instance.")
+include(vcpkg_utilities)
+get_vcpkg(${EXTERNAL_VCPKG_DIR})
+vcpkg_install(fmt)
+
+set_property(DIRECTORY
+    PROPERTY
+        EP_BASE hello
+)
+ExternalProject_Add(hello
+    DEPENDS ${VCPKG_DEPENDENCIES}
+    SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/src
+    BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/hello
+    INSTALL_COMMAND ""
+    CMAKE_ARGS --no-warn-unused-cli;
+                ${CL_ARGS};
+                -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>;
+                -DCMAKE_TOOLCHAIN_FILE=${VCPKG_DIR}/scripts/buildsystems/vcpkg.cmake
+)
