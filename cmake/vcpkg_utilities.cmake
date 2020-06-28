@@ -22,8 +22,9 @@ function (get_vcpkg)
         CONFIGURE_COMMAND ""
         BUILD_COMMAND "<SOURCE_DIR>/${VCPKG_BUILD_CMD}"
         INSTALL_COMMAND ""
+        UPDATE_COMMAND ""
         STEP_TARGETS build
-        BUILD_BYPRODUCTS "<SOURCE_DIR>/vcpkg"
+        BUILD_BYPRODUCTS "<SOURCE_DIR>/${VCPKG_BINARY}"
     )
     ExternalProject_Get_Property(vcpkg SOURCE_DIR)
     set(VCPKG_DIR "${SOURCE_DIR}" PARENT_SCOPE)
