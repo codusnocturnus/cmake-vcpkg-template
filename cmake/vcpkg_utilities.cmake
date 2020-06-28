@@ -16,20 +16,29 @@ function (get_vcpkg)
     endif()
     set(VCPKG_TRIPLET "${PLATFORMNAME}-${OSNAME}" PARENT_SCOPE)
 
-    ExternalProject_Add(vcpkg
-        GIT_REPOSITORY https://github.com/microsoft/vcpkg.git
-        GIT_TAG 2020.06
-        CONFIGURE_COMMAND ""
-        BUILD_COMMAND "<SOURCE_DIR>/${VCPKG_BUILD_CMD}"
-        INSTALL_COMMAND ""
-        UPDATE_COMMAND ""
-        STEP_TARGETS build
-        BUILD_BYPRODUCTS "<SOURCE_DIR>/${VCPKG_BINARY}"
-    )
-    ExternalProject_Get_Property(vcpkg SOURCE_DIR)
-    set(VCPKG_DIR "${SOURCE_DIR}" PARENT_SCOPE)
-    set(VCPKG_CMD "${SOURCE_DIR}/${VCPKG_BINARY}" PARENT_SCOPE)
-    set(VCPKG_DEPENDENCIES "vcpkg" PARENT_SCOPE)
+    if(${ARGC} EQUAL 0)
+        # create/use a local vcpkg instance
+        ExternalProject_Add(vcpkg
+            GIT_REPOSITORY https://github.com/microsoft/vcpkg.git
+            GIT_TAG 2020.06
+            CONFIGURE_COMMAND ""
+            BUILD_COMMAND "<SOURCE_DIR>/${VCPKG_BUILD_CMD}"
+            INSTALL_COMMAND ""
+            UPDATE_COMMAND ""
+            STEP_TARGETS build
+            BUILD_BYPRODUCTS "<SOURCE_DIR>/${VCPKG_BINARY}"
+        )
+        ExternalProject_Get_Property(vcpkg SOURCE_DIR)
+        set(VCPKG_DIR "${SOURCE_DIR}" PARENT_SCOPE)
+        set(VCPKG_CMD "${SOURCE_DIR}/${VCPKG_BINARY}" PARENT_SCOPE)
+        set(VCPKG_DEPENDENCIES "vcpkg" PARENT_SCOPE)
+    else()
+        # use an external/existing vcpkg instance
+        add_custom_target(vcpkg)
+        set(VCPKG_DIR "${ARGV0}" PARENT_SCOPE)
+        set(VCPKG_CMD "${ARGV0}/${VCPKG_BINARY}" PARENT_SCOPE)
+        set(VCPKG_DEPENDENCIES "vcpkg" PARENT_SCOPE)
+    endif()
 endfunction()
 
 function (vcpkg_install PACKAGE_NAME)
@@ -37,7 +46,7 @@ function (vcpkg_install PACKAGE_NAME)
         OUTPUT "${VCPKG_DIR}/packages/${PACKAGE_NAME}_${VCPKG_TRIPLET}/BUILD_INFO"
         COMMAND ${VCPKG_CMD} install ${PACKAGE_NAME}:${VCPKG_TRIPLET}
         WORKING_DIRECTORY ${VCPKG_DIR}
-        DEPENDS vcpkg-build
+        DEPENDS vcpkg
     )
     add_custom_target(
         get${PACKAGE_NAME}
