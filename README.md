@@ -5,8 +5,7 @@
 A template for using vcpkg to provide packages for CMake projects.
 
 Features:
-- superbuild project structure
-  - manages (vcpkg, ExternalProject) dependencies and main project separately, so dependencies are available to the main project when it is configured
+- manages (vcpkg, ExternalProject) dependencies and main project separately, so dependencies are available to the main project when it is configured
 - manages vcpkg
   - get_vcpkg() - installs a local vcpkg instance
   - get_vcpkg(_/path/to/vcpkg_) - links vcpkg functions to a separately-installed vcpkg instance
