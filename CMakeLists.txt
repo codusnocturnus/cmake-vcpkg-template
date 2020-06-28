@@ -20,7 +20,7 @@ project(top
 set(EXTERNAL_VCPKG_DIR "" CACHE STRING "Allows the project to use an existing external vcpkg instance.")
 include(vcpkg_utilities)
 get_vcpkg(${EXTERNAL_VCPKG_DIR})
-vcpkg_install(fmt)
+vcpkg_packagefile("vcpkgs.txt")
 
 include(ExternalProject)
 set_property(DIRECTORY
