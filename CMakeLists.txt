@@ -22,8 +22,9 @@ if (DO_SUPERBUILD)
     set(PROJECT_ROOT ${CMAKE_CURRENT_LIST_DIR})
     set(DEPENDENCIES)
 
+    set(EXTERNAL_VCPKG_DIR "" CACHE STRING "Allows the project to use an existing external vcpkg instance.")
     include(vcpkg_utilities)
-    get_vcpkg()
+    get_vcpkg(${EXTERNAL_VCPKG_DIR})
     vcpkg_install(fmt)
     
     set_property(DIRECTORY
@@ -35,11 +36,11 @@ if (DO_SUPERBUILD)
         SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/src
         BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/hello
         INSTALL_COMMAND ""
-        CMAKE_ARGS ${CL_ARGS};
+        CMAKE_ARGS --no-warn-unused-cli;
+                   ${CL_ARGS};
                    -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>;
                    -DCMAKE_TOOLCHAIN_FILE=${VCPKG_DIR}/scripts/buildsystems/vcpkg.cmake
     )
-    return()
 else()
     project(Secondary
         LANGUAGES NONE
