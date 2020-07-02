@@ -14,11 +14,25 @@ on:
 jobs:
   # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
+    name: ${{ matrix.config.name }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
+        config:
+          - {
+              name: 'windows-latest msvc',
+              os: windows-latest,
+              cc: 'cl',
+              cxx: 'cl',
+              environment_script: 'C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat'
+          }
+          - {
+            name: 'ubuntu-latest clang',
+            os: ubuntu-latest,
+            cc: 'clang',
+            cxx: 'clang++'
+          }
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
