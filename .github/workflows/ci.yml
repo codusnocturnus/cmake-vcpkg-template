@@ -74,6 +74,7 @@ jobs:
 
     - name: CMake build (Windows)
       if: matrix.config.os == 'windows-latest'
+      shell: cmd
       run: |
         cd build
         call C:/"Program Files (x86)"/"Microsoft Visual Studio"/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat
