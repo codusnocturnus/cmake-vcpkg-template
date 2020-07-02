@@ -25,14 +25,16 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
-    # Runs a single command using the runners shell
+    - name: install Ninja
+      if: matrix.os == 'ubuntu-latest'
+      run: sudo apt-get install -y ninja-build
+
     - name: CMake configure
       run: |
         mkdir -p build
         cd build
         cmake -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DVCPKG_DISABLE_METRICS=ON -DVCPKG_DEVELOPMENT_WARNINGS=OFF -G Ninja ..
 
-    # Runs a set of commands using the runners shell
     - name: CMake build
       run: |
         cd build
