@@ -17,10 +17,10 @@ project(top
     LANGUAGES CXX
 )
 
-set(EXTERNAL_VCPKG_DIR "" CACHE STRING "Allows the project to use an existing external vcpkg instance.")
+set(EXTERNAL_VCPKG_DIR "" CACHE STRING "Path to an existing external vcpkg instance.")
 include(vcpkg_utilities)
 get_vcpkg(${EXTERNAL_VCPKG_DIR})
-vcpkg_packagefile("vcpkgs.txt")
+vcpkg_packagefile("${CMAKE_CURRENT_LIST_DIR}/vcpkgs.txt")
 
 include(ExternalProject)
 set_property(DIRECTORY
