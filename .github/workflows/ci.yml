@@ -30,7 +30,7 @@ jobs:
       run: |
         mkdir -p build
         cd build
-        cmake ..
+        cmake .. -DCMAKE_BUILD_TYPE=Release
 
     # Runs a set of commands using the runners shell
     - name: CMake build
