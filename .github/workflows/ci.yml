@@ -61,9 +61,10 @@ jobs:
       run: |
         mkdir -p build
         cd build
+        ${{ matrix.config.environment_script }}
         set CC="${{ matrix.config.cc }}"
         set CXX="${{ matrix.config.cxx }}"
-        ${{ matrix.config.environment_script }}
+        echo "hello"
         cmake -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DVCPKG_DISABLE_METRICS=ON -DVCPKG_DEVELOPMENT_WARNINGS=OFF -G Ninja ..
 
     - name: CMake build
