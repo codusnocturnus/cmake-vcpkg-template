@@ -25,9 +25,13 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
-    - name: install Ninja
+    - name: install dependencies (Linux)
       if: matrix.os == 'ubuntu-latest'
       run: sudo apt-get install -y ninja-build
+
+    - name: install dependencies (Windows)
+      if: matrix.os == 'windows-latest'
+      run: choco install ninja
 
     - name: CMake configure
       run: |
