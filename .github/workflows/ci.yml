@@ -61,14 +61,20 @@ jobs:
       run: |
         mkdir -p build
         cd build
-        cd
         call C:/"Program Files (x86)"/"Microsoft Visual Studio"/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat
         set CC="${{ matrix.config.cc }}"
         set CXX="${{ matrix.config.cxx }}"
-        cd
         cmake -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DVCPKG_DISABLE_METRICS=ON -DVCPKG_DEVELOPMENT_WARNINGS=OFF -G Ninja ..
 
-    - name: CMake build
+    - name: CMake build (Linux)
+      if: matrix.config.os == 'ubuntu-latest'
       run: |
         cd build
+        cmake --build .
+
+    - name: CMake build (Windows)
+      if: matrix.config.os == 'windows-latest'
+      run: |
+        cd build
+        call C:/"Program Files (x86)"/"Microsoft Visual Studio"/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat
         cmake --build .
