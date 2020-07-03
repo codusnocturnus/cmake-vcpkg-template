@@ -13,25 +13,35 @@ list(APPEND
     CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake
 )
 
-project(top
-    LANGUAGES CXX
-)
+option(DO_SUPERBUILD "" ON)
 
-set(EXTERNAL_VCPKG_DIR "" CACHE STRING "Path to an existing external vcpkg instance.")
-include(vcpkg_utilities)
-get_vcpkg(${EXTERNAL_VCPKG_DIR})
-vcpkg_packagefile("${CMAKE_CURRENT_LIST_DIR}/vcpkgs.txt")
+if(DO_SUPERBUILD)
+    project(top
+        LANGUAGES CXX
+    )
 
-include(ExternalProject)
-set_property(DIRECTORY
-    PROPERTY
-        EP_BASE hello
-)
-ExternalProject_Add(hello
-    DEPENDS ${VCPKG_DEPENDENCIES}
-    SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/src
-    INSTALL_COMMAND ""
-    CMAKE_ARGS ${CL_ARGS};
-               --no-warn-unused-cli;
-               -DCMAKE_TOOLCHAIN_FILE=${VCPKG_DIR}/scripts/buildsystems/vcpkg.cmake
-)
+    set(EXTERNAL_VCPKG_DIR "" CACHE STRING "Path to an existing external vcpkg instance.")
+    include(vcpkg_utilities)
+    get_vcpkg(${EXTERNAL_VCPKG_DIR})
+    vcpkg_packagefile("${CMAKE_CURRENT_LIST_DIR}/vcpkgs.txt")
+
+    include(ExternalProject)
+    ExternalProject_Add(hello
+        DEPENDS ${VCPKG_DEPENDENCIES}
+        SOURCE_DIR ${PROJECT_SOURCE_DIR}
+        PREFIX ${CMAKE_CURRENT_BINARY_DIR}/hello
+        INSTALL_COMMAND ""
+        BUILD_ALWAYS TRUE
+        CMAKE_ARGS -DDO_SUPERBUILD=OFF;
+                   ${CL_ARGS};
+                   --no-warn-unused-cli;
+                   -DCMAKE_TOOLCHAIN_FILE=${VCPKG_DIR}/scripts/buildsystems/vcpkg.cmake
+    )
+    return()
+else()
+    project(hello
+        LANGUAGES CXX
+    )
+endif()
+
+add_subdirectory(src)
