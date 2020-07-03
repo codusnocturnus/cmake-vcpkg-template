@@ -14,26 +14,64 @@ on:
 jobs:
   # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
-    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        config:
+          - {
+              name: 'windows-latest msvc',
+              os: windows-latest,
+              cc: 'cl',
+              cxx: 'cl',
+              environment_script: 'C:/"Program Files (x86)"/"Microsoft Visual Studio"/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat'
+          }
+          - {
+            name: 'ubuntu-latest clang',
+            os: ubuntu-latest,
+            cc: 'clang',
+            cxx: 'clang++'
+          }
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
-    # Runs a single command using the runners shell
-    - name: CMake configure
+    - name: install dependencies (Linux)
+      if: matrix.config.os == 'ubuntu-latest'
+      run: sudo apt-get install -y ninja-build
+
+    - name: install dependencies (Windows)
+      if: matrix.config.os == 'windows-latest'
+      run: choco install ninja
+
+    - name: CMake configure (Linux)
+      if: matrix.config.os == 'ubuntu-latest'
       run: |
         mkdir -p build
         cd build
-        cmake ..
+        cmake -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DVCPKG_DISABLE_METRICS=ON -DVCPKG_DEVELOPMENT_WARNINGS=OFF -DCMAKE_C_COMPILER=${{ matrix.config.cc }} -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }} -G Ninja ..
 
-    # Runs a set of commands using the runners shell
-    - name: CMake build
+    - name: CMake configure (Windows)
+      if: matrix.config.os == 'windows-latest'
+      shell: cmd
+      run: |
+        mkdir -p build
+        cd build
+        call C:/"Program Files (x86)"/"Microsoft Visual Studio"/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat
+        cmake -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DVCPKG_DISABLE_METRICS=ON -DVCPKG_DEVELOPMENT_WARNINGS=OFF -DCMAKE_C_COMPILER=${{ matrix.config.cc }} -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }} -G Ninja ..
+
+    - name: CMake build (Linux)
+      if: matrix.config.os == 'ubuntu-latest'
       run: |
         cd build
+        cmake --build .
+
+    - name: CMake build (Windows)
+      if: matrix.config.os == 'windows-latest'
+      shell: cmd
+      run: |
+        cd build
+        call C:/"Program Files (x86)"/"Microsoft Visual Studio"/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat
         cmake --build .
