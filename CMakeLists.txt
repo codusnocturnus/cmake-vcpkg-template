@@ -32,5 +32,6 @@ ExternalProject_Add(hello
     SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/src
     INSTALL_COMMAND ""
     CMAKE_ARGS ${CL_ARGS};
+               --no-warn-unused-cli;
                -DCMAKE_TOOLCHAIN_FILE=${VCPKG_DIR}/scripts/buildsystems/vcpkg.cmake
 )
