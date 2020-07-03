@@ -51,9 +51,7 @@ jobs:
       run: |
         mkdir -p build
         cd build
-        export CC=${{ matrix.config.cc }}
-        export CXX=${{ matrix.config.cxx }}
-        cmake -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DVCPKG_DISABLE_METRICS=ON -DVCPKG_DEVELOPMENT_WARNINGS=OFF -G Ninja ..
+        cmake -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DVCPKG_DISABLE_METRICS=ON -DVCPKG_DEVELOPMENT_WARNINGS=OFF -DCMAKE_C_COMPILER=${{ matrix.config.cc }} -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }} -G Ninja ..
 
     - name: CMake configure (Windows)
       if: matrix.config.os == 'windows-latest'
@@ -62,9 +60,7 @@ jobs:
         mkdir -p build
         cd build
         call C:/"Program Files (x86)"/"Microsoft Visual Studio"/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat
-        set CC="${{ matrix.config.cc }}"
-        set CXX="${{ matrix.config.cxx }}"
-        cmake -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DVCPKG_DISABLE_METRICS=ON -DVCPKG_DEVELOPMENT_WARNINGS=OFF -G Ninja ..
+        cmake -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DVCPKG_DISABLE_METRICS=ON -DVCPKG_DEVELOPMENT_WARNINGS=OFF -DCMAKE_C_COMPILER=${{ matrix.config.cc }} -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }} -G Ninja ..
 
     - name: CMake build (Linux)
       if: matrix.config.os == 'ubuntu-latest'
